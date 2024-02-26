@@ -1,6 +1,11 @@
 import dotenv from 'dotenv';
 import { Client } from 'tmi.js';
-import { setCurrentGame, getCurrentGame, getChannelIDFromName } from './statics/twitchcalls.js';
+import { 
+    getUserCurrentGame, 
+    setCurrentGame, 
+    getCurrentGame, 
+    getChannelIDFromName 
+} from './statics/twitchcalls.js';
 
 dotenv.config();
 
@@ -17,16 +22,30 @@ const COMMANDS = {
         response: `twitter: https://twitter.com/Vulpescorsac_`
     },
     whoami: {
-        response: (channel, context, argument) => `You are ${context.username}`
+        response: (channel, context, argument) => {
+            client.say(channel, `You are ${context.username}`);
+        }
     },
     getgame: {
         response: (channel, context, argument) => {
             getCurrentGame(client, channel, cID);
         }
     },
+}
+const MODCOMMANDS = {
     setgame: {
         response: (channel, context, argument) => {
             //setCurrentGame(client, channel, cID, argument);
+            return;
+        }
+    },
+    so: {
+        response: (channel, context, argument) => {
+            if(argument.charAt(0) === '@'){
+                shoutout(channel, argument.substring(1));
+                return;
+            }
+            shoutout(channel, argument);
         }
     }
 }
@@ -61,6 +80,15 @@ setInterval(() => {
     client.say("#vulpefox", "If you must know about the secret vulpe throne that I don't know how to use, it's right here: https://throne.com/vulpefox");
 }, minute * 29);
 
+// shout out
+async function shoutout(channel, username) {
+    let userCID = await getChannelIDFromName(username);
+    let userGame = await getUserCurrentGame(client, channel, userCID);
+    if(userGame == ""){
+        userGame = "<no game>";
+    }
+    client.say(channel, `Here comes a fluffy foxy shoutout to @${username}, they were playing ${userGame} at https://twitch.tv/${username} AWOOOO!~`);
+}
 
 // context:
 //  client-nonce -> silly nonce, useless in theory
@@ -100,11 +128,20 @@ client.on('message', async (channel, context, message) => {
     if(REGEX_COMMAND.test(message)){
         const [raw, command, argument] = message.match(REGEX_COMMAND);
         const { response } = COMMANDS[command] || {};
+        const modResponse = MODCOMMANDS[command] || {};
 
         if(typeof response === 'function') {
             response(channel, context, argument);
         } else if(typeof response === 'string'){
             client.say(channel, response);
+        }
+
+        if(context.mod || context.username.toLowerCase == process.env.TWITCH_CHANNEL_NAME.toLowerCase){
+            if(typeof modResponse["response"] === 'function') {
+                modResponse["response"](channel, context, argument);
+            } else if(typeof modResponse["response"] === 'string'){
+                client.say(channel, response);
+            }
         }
     }
 });
@@ -132,7 +169,7 @@ client.on('resub', (channel, username, months, message, userstate, methods) => {
 });
 
 client.on('raided', async (channel, username, viewers) => {
-    client.say(channel, `!so @${username}`);
+    shoutout(channel, username);
 });
 
 client.on('anonsubmysterygift', async (channel, numbOfSubs, methods, userstate) => {});

@@ -57,6 +57,18 @@ export async function setCurrentGame(client, channel, channelID, gameName) {
     }
 }
 
+export async function getUserCurrentGame(client, channel, channelID) {
+    let game = await fetch(`https://api.twitch.tv/helix/channels?broadcaster_id=${channelID}`, {
+        headers: auth,
+        method: 'GET'
+    })
+    .then((response) => response.json())
+    .then((json) => json['data'])
+    .then((data) => data[0]['game_name']);
+    console.warn("ACTION: current game received")
+    return game;
+}
+
 export async function getCurrentGame(client, channel, channelID) {
     let game = await fetch(`https://api.twitch.tv/helix/channels?broadcaster_id=${channelID}`, {
         headers: auth,
