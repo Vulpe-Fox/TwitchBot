@@ -4,7 +4,7 @@ import {
     getUserCurrentGame, 
     setCurrentGame, 
     getCurrentGame, 
-    getChannelIDFromName 
+    getChannelIDFromName
 } from './statics/twitchcalls.js';
 
 dotenv.config();
@@ -35,7 +35,7 @@ const COMMANDS = {
 const MODCOMMANDS = {
     setgame: {
         response: (channel, context, argument) => {
-            //setCurrentGame(client, channel, cID, argument);
+            setCurrentGame(client, channel, cID, argument);
             return;
         }
     },
@@ -118,12 +118,12 @@ async function shoutout(channel, username) {
 client.on('message', async (channel, context, message) => {
     const isBot = context.username.toLowerCase() == process.env.TWITCH_BOT_USERNAME.toLowerCase();
 
-    // keep log of chat
-    console.log(`${context['display-name']}: ${message}`);
-
     if(isBot){
         return;
     }
+    
+    // keep log of chat
+    console.log(`${context['display-name']}: ${message}`);
 
     if(REGEX_COMMAND.test(message)){
         const [raw, command, argument] = message.match(REGEX_COMMAND);
@@ -169,6 +169,7 @@ client.on('resub', (channel, username, months, message, userstate, methods) => {
 });
 
 client.on('raided', async (channel, username, viewers) => {
+    client.say(channel, `Warm welcome to ${username} and all your silly ${viewers} beans!`);
     shoutout(channel, username);
 });
 
@@ -182,14 +183,14 @@ client.on('connecting', async (address, port) => {});
 client.on('disconnected', async (reason) => {});
 client.on('emoteonly', async (channel, enabled) => {});
 client.on('followersonly', async (channel, enabled, length) => {});
+client.on('giftpaidupgrade', async (channel, username, sender, userstate) => {});
+client.on('hosted', async (channel, username, viewers, autohost) => {});
+client.on('hosting', async (channel, target, viewers) => {});
+client.on('join', async (channel, username, self) => {});
+client.on('messagedeleted', async (channel, username, deletedMessage, userstate) => {});
+client.on('mod', async (channel, username) => {});
 
-    /*giftpaidupgrade(channel: string, username: string, sender: string, userstate: SubGiftUpgradeUserstate): void;
-    hosted(channel: string, username: string, viewers: number, autohost: boolean): void;
-    hosting(channel: string, target: string, viewers: number): void;
-    join(channel: string, username: string, self: boolean): void;
-    messagedeleted(channel: string, username: string, deletedMessage: string, userstate: DeleteUserstate): void;
-    mod(channel: string, username: string): void;
-    mods(channel: string, mods: string[]): void;
+    /*mods(channel: string, mods: string[]): void;
     notice(channel: string, msgid: MsgID, message: string): void;
     part(channel: string, username: string, self: boolean): void;
     primepaidupgrade(channel: string, username: string, methods: SubMethods, userstate: PrimeUpgradeUserstate): void;
