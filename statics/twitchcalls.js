@@ -90,9 +90,77 @@ export async function getCurrentGame(client, channel, channelID) {
     client.say(channel, `The current game is ${game}`);
 }
 
+export async function sendAnnouncement(channelID, msg){
+    let token = await getModeratorManageAnnouncementsScope();
+    let announcement = await fetch(`https://api.twitch.tv/helix/chat/announcements?broadcaster_id=${channelID}&moderator_id=${process.env.TWITCH_APP_CLIENT}`, {
+        headers: authCType(token, process.env.TWITCH_APP_CLIENT),
+        body: JSON.stringify({
+            message: msg,
+            color: `green`
+        }),
+        method: 'POST'
+    })
+    .then((response) => response.json())
+    console.log(announcement);
+}
+
 /*function generateState(){
     return randomBytes(16).toString("hex");
 }*/
+
+async function getModeratorManageAnnouncementsScope() {
+    // check for refresh token
+    let refreshToken = "";
+    try {
+        refreshToken = readFileSync('./statics/tokens/moderatormanageannouncementsrefresh.txt', 'utf8');
+    } catch (err) {
+        console.log(err);
+    }
+
+    let response;
+    // if no refresh, get new token
+    if(refreshToken == undefined || refreshToken == ""){
+        response = await fetch(`https://id.twitch.tv/oauth2/token`+
+                                    `?client_id=${process.env.TWITCH_APP_CLIENT}`+
+                                    `&client_secret=${process.env.TWITCH_APP_SECRET}`+
+                                    `&code=${process.env.MODERATOR_MANAGE_ANNOUNCEMENTS_SCOPE_CODE}`+
+                                    `&grant_type=authorization_code`+
+                                    `&redirect_uri=http://localhost`, {
+            method: 'POST'
+        })
+        .then((response) => response.json());
+    } else{
+        //let refresh_encoded = encodeURI(refreshToken);
+        // if token, refresh
+        response = await fetch(`https://id.twitch.tv/oauth2/token`+
+                                `?client_id=${process.env.TWITCH_APP_CLIENT}`+
+                                `&client_secret=${process.env.TWITCH_APP_SECRET}`+
+                                `&grant_type=refresh_token`+
+                                `&refresh_token=${refreshToken}`, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            method: 'POST'
+        })
+        .then((response) => response.json());
+    }
+
+    // Write to file new refresh token
+    let result = "";
+    if(response['refresh_token'] != undefined){
+        result = response['refresh_token'];
+    }
+    writeFile('./statics/tokens/moderatormanageannouncementsrefresh.txt', result, err => {
+        if (err) {
+          console.error(err);
+        }
+    });
+
+    // get token and return
+    let token = response['access_token'];
+    console.warn("ACTION: moderator:manage:announcements token generated");
+    return token;
+}
 
 async function getChannelManageBroadcastScope() {
     // check for refresh token
@@ -106,7 +174,6 @@ async function getChannelManageBroadcastScope() {
     let response;
     // if no refresh, get new token
     if(refreshToken == undefined){
-        let code = process.env.CHANNEL_MANAGE_BROADCAST_SCOPE;
         response = await fetch(`https://id.twitch.tv/oauth2/token`+
                                     `?client_id=${process.env.TWITCH_APP_CLIENT}`+
                                     `&client_secret=${process.env.TWITCH_APP_SECRET}`+

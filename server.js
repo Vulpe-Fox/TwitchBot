@@ -4,7 +4,8 @@ import {
     getUserCurrentGame, 
     setCurrentGame, 
     getCurrentGame, 
-    getChannelIDFromName
+    getChannelIDFromName,
+    sendAnnouncement
 } from './statics/twitchcalls.js';
 
 dotenv.config();
@@ -189,15 +190,14 @@ client.on('hosting', async (channel, target, viewers) => {});
 client.on('join', async (channel, username, self) => {});
 client.on('messagedeleted', async (channel, username, deletedMessage, userstate) => {});
 client.on('mod', async (channel, username) => {});
-
-    /*mods(channel: string, mods: string[]): void;
-    notice(channel: string, msgid: MsgID, message: string): void;
-    part(channel: string, username: string, self: boolean): void;
-    primepaidupgrade(channel: string, username: string, methods: SubMethods, userstate: PrimeUpgradeUserstate): void;
+client.on('mods', async (channel, mods) => {});
+client.on('notice', async (channel, msgid, message) => {});
+client.on('part', async (channel, username, self) => {});
+client.on('primepaidupgrade', async (channel, username, methods, userstate) => {});
 
     // additional string literals for autocomplete
     
-    roomstate(channel: string, state: RoomState): void;
+    /*roomstate(channel: string, state: RoomState): void;
     serverchange(channel: string): void;
     slowmode(channel: string, enabled: boolean, length: number): void;
     subgift(
