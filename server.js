@@ -91,31 +91,6 @@ async function shoutout(channel, username) {
     client.say(channel, `Here comes a fluffy foxy shoutout to @${username}, they were playing ${userGame} at https://twitch.tv/${username} AWOOOO!~`);
 }
 
-// context:
-//  client-nonce -> silly nonce, useless in theory
-//  badge-info -> Subset badges -> can be null
-//      -> list consists of badges on user
-//  display-name -> name
-//  color -> name colour
-//  emotes -> Subset list of emotes -> can be null
-//      -> list consists of emote hashes
-//  first-msg -> whether first msg
-//  flags -> possibly flags on user suspicion?
-//  id -> user id, less unique than client nonce
-//  mod -> whether user is mod or not (broadcaster is not mod)
-//  returning-chatter -> whether user is returning or not
-//  room-id -> id of chatroom for user (external or internal)
-//  subscriber
-//  tmi-sent-ts
-//  turbo
-//  user-id
-//  user-type
-//  emotes-raw
-//  badge-info-raw
-//  badges-raw
-//  username
-//  message-type
-
 client.on('message', async (channel, context, message) => {
     const isBot = context.username.toLowerCase() == process.env.TWITCH_BOT_USERNAME.toLowerCase();
 
@@ -194,35 +169,13 @@ client.on('mods', async (channel, mods) => {});
 client.on('notice', async (channel, msgid, message) => {});
 client.on('part', async (channel, username, self) => {});
 client.on('primepaidupgrade', async (channel, username, methods, userstate) => {});
-
-    // additional string literals for autocomplete
-    
-    /*roomstate(channel: string, state: RoomState): void;
-    serverchange(channel: string): void;
-    slowmode(channel: string, enabled: boolean, length: number): void;
-    subgift(
-        channel: string,
-        username: string,
-        streakMonths: number,
-        recipient: string,
-        methods: SubMethods,
-        userstate: SubGiftUserstate,
-    ): void;
-    submysterygift(
-        channel: string,
-        username: string,
-        numbOfSubs: number,
-        methods: SubMethods,
-        userstate: SubMysteryGiftUserstate,
-    ): void;
-    subscribers(channel: string, enabled: boolean): void;
-    subscription(
-        channel: string,
-        username: string,
-        methods: SubMethods,
-        message: string,
-        userstate: SubUserstate,
-    ): void;
-    timeout(channel: string, username: string, reason: string, duration: number, userstate: TimeoutUserstate): void;
-    vips(channel: string, vips: string[]): void;
-    whisper(from: string, userstate: ChatUserstate, message: string, self: boolean): void;*/
+client.on('roomstate', async (channel, state) => {});
+client.on('serverchange', async (channel) => {});
+client.on('slowmode', async (channel, enabled, length) => {});
+client.on('subgift', async (channel, username, streakMonths, recipient, methods, userstate) => {});
+client.on('submysterygift', async (channel, username, numbOfSubs, methods, userstate) => {});
+client.on('subscribers', async (channel, enabled) => {});
+client.on('subscription', async (channel, username, methods, message, userstate) => {});
+client.on('timeout', async (channel, username, reason, duration, userstate) => {});
+client.on('vips', async (channel, vips) => {});
+client.on('whisper', async (from, userstate, message, self) => {});
