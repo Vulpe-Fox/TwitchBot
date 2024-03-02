@@ -19,16 +19,21 @@ const authCType = (token, id) => {
 }
 
 export async function getChannelIDFromName(name) {
-    let id = await fetch(`https://api.twitch.tv/helix/users?login=${name}`, {
-        headers: auth,
-        method: 'GET'
-    })
-    .then((response) => response.json())
-    .then((json) => json['data'])
-    .then((data) => data[0]['id']);
+    try {
+        let id = await fetch(`https://api.twitch.tv/helix/users?login=${name}`, {
+            headers: auth,
+            method: 'GET'
+        })
+        .then((response) => response.json())
+        .then((json) => json['data'])
+        .then((data) => data[0]['id']);
+        console.warn("ACTION: channel id received");
+        return id;
+    } catch (err) {
+        console.log(err);
+        return "";4
+    }
 
-    console.warn("ACTION: channel id received");
-    return id;
 }
 
 async function getGameIDFromName(name) {
@@ -67,15 +72,20 @@ export async function setCurrentGame(client, channel, channelID, gameName) {
 }
 
 export async function getUserCurrentGame(client, channel, channelID) {
-    let game = await fetch(`https://api.twitch.tv/helix/channels?broadcaster_id=${channelID}`, {
-        headers: auth,
-        method: 'GET'
-    })
-    .then((response) => response.json())
-    .then((json) => json['data'])
-    .then((data) => data[0]['game_name']);
-    console.warn("ACTION: current game received");
-    return game;
+    try{
+        let game = await fetch(`https://api.twitch.tv/helix/channels?broadcaster_id=${channelID}`, {
+            headers: auth,
+            method: 'GET'
+        })
+        .then((response) => response.json())
+        .then((json) => json['data'])
+        .then((data) => data[0]['game_name']);
+        console.warn("ACTION: current game received");
+        return game;
+    } catch (err) {
+        console.log("Game could not be found.")
+        return "<no game>";
+    }
 }
 
 export async function getCurrentGame(client, channel, channelID) {

@@ -123,25 +123,25 @@ client.on('message', async (channel, context, message) => {
 });
 
 client.on('redeem', (channel, username, rewardType, tags, message) => {
-    switch(rewardType) {
+    /*switch(rewardType) {
         // Message that appears "highlighted" in the chat.
         case 'highlighted-message': break;
         // Message that skips the subscriber-only mode
         case 'skip-subs-mode-message': break;
         // Custom reward ID
         case '27c8e486-a386-40cc-9a4b-dbb5cf01e439': break;
-    }
+    }*/
 });
 
 client.on('resub', (channel, username, months, message, userstate, methods) => {
-    switch(rewardType) {
+    /*switch(rewardType) {
         // Message that appears "highlighted" in the chat.
         case 'highlighted-message': break;
         // Message that skips the subscriber-only mode
         case 'skip-subs-mode-message': break;
         // Custom reward ID
         case '27c8e486-a386-40cc-9a4b-dbb5cf01e439': break;
-    }
+    }*/
 });
 
 client.on('raided', async (channel, username, viewers) => {
