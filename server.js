@@ -112,7 +112,7 @@ client.on('message', async (channel, context, message) => {
             client.say(channel, response);
         }
 
-        if(context.mod || context.username.toLowerCase == process.env.TWITCH_CHANNEL_NAME.toLowerCase){
+        if(context.mod == true || context.username.toLowerCase() === process.env.TWITCH_CHANNEL_NAME.toLowerCase()){
             if(typeof modResponse["response"] === 'function') {
                 modResponse["response"](channel, context, argument);
             } else if(typeof modResponse["response"] === 'string'){

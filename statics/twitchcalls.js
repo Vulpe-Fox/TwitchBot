@@ -31,7 +31,7 @@ export async function getChannelIDFromName(name) {
         return id;
     } catch (err) {
         console.log(err);
-        return "";4
+        return "";
     }
 
 }
@@ -102,8 +102,8 @@ export async function getCurrentGame(client, channel, channelID) {
 
 export async function sendAnnouncement(channelID, msg){
     let token = await getModeratorManageAnnouncementsScope();
-    let announcement = await fetch(`https://api.twitch.tv/helix/chat/announcements?broadcaster_id=${channelID}&moderator_id=${process.env.TWITCH_APP_CLIENT}`, {
-        headers: authCType(token, process.env.TWITCH_APP_CLIENT),
+    let announcement = await fetch(`https://api.twitch.tv/helix/chat/announcements?broadcaster_id=${channelID}&moderator_id=${process.env.TWITCH_APP_CLIENT2}`, {
+        headers: authCType(token, process.env.TWITCH_APP_CLIENT2),
         body: JSON.stringify({
             message: msg,
             color: `green`
@@ -131,8 +131,8 @@ async function getModeratorManageAnnouncementsScope() {
     // if no refresh, get new token
     if(refreshToken == undefined || refreshToken == ""){
         response = await fetch(`https://id.twitch.tv/oauth2/token`+
-                                    `?client_id=${process.env.TWITCH_APP_CLIENT}`+
-                                    `&client_secret=${process.env.TWITCH_APP_SECRET}`+
+                                    `?client_id=${process.env.TWITCH_APP_CLIENT2}`+
+                                    `&client_secret=${process.env.TWITCH_APP_SECRET2}`+
                                     `&code=${process.env.MODERATOR_MANAGE_ANNOUNCEMENTS_SCOPE_CODE}`+
                                     `&grant_type=authorization_code`+
                                     `&redirect_uri=http://localhost`, {
@@ -160,6 +160,7 @@ async function getModeratorManageAnnouncementsScope() {
     if(response['refresh_token'] != undefined){
         result = response['refresh_token'];
     }
+    console.log(result);
     writeFile('./statics/tokens/moderatormanageannouncementsrefresh.txt', result, err => {
         if (err) {
           console.error(err);
